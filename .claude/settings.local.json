@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /private/tmp/claude-501/-Users-peter-Desktop-dev-Valg2026/86f0e6fd-0d86-4ccb-8fc9-bca6c083fd36/tasks/*.output)",
+      "WebSearch",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:politpro.eu)",
+      "Bash(gh repo:*)",
+      "Bash(gh api:*)",
+      "Bash(python3 -c \"import sys,json; [print\\(f[''''name''''], f[''''type'''']\\) for f in json.load\\(sys.stdin\\)]\")",
+      "WebFetch(domain:da.wikipedia.org)",
+      "WebFetch(domain:europeelects.eu)",
+      "WebFetch(domain:www.thelocal.dk)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --turbopack)",
+      "Bash(npx create-next-app@latest valg2026-temp --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --turbopack)"
+    ]
+  }
+}
