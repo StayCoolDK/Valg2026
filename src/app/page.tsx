@@ -319,22 +319,22 @@ export default function HomePage() {
                 <Link key={letter} href={`/partier/${letter}`}>
                   <Card className="hover:shadow-md transition-all cursor-pointer h-full overflow-hidden">
                     <div className="h-1.5" style={{ backgroundColor: party.color }} />
-                    <CardContent className="pt-4">
-                      <div className="flex items-center gap-2 mb-2">
+                    <CardContent className="pt-3 px-3 sm:pt-4 sm:px-6">
+                      <div className="flex items-center gap-2 mb-3">
                         <span
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs"
+                          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-white font-bold text-xs"
                           style={{ backgroundColor: party.color }}
                         >
                           {party.letter}
                         </span>
                         <div className="min-w-0">
                           <h3 className="font-semibold text-sm leading-tight">{party.name}</h3>
-                          <p className="text-xs text-muted-foreground">{party.leader}</p>
+                          <p className="text-xs text-muted-foreground truncate">{party.leader}</p>
                         </div>
                       </div>
-                      <div className="flex items-baseline gap-3">
-                        <span className="text-xl font-bold">{avg.mean.toFixed(1)} %</span>
-                        <span className="text-sm text-muted-foreground">{seats} mandater</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-2xl font-bold">{avg.mean.toFixed(1)} %</span>
+                        <span className="text-xs text-muted-foreground">{seats} mandater</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -411,10 +411,16 @@ export default function HomePage() {
                   <thead>
                     <tr className="border-b">
                       <th className="text-left py-2">Parti</th>
-                      <th className="text-right py-2">Gns. %</th>
-                      <th className="text-right py-2">Mandater (median)</th>
-                      <th className="text-right py-2">Interval (5–95 %)</th>
-                      <th className="text-right py-2">Klarer grænsen</th>
+                      <th className="text-right py-2 whitespace-nowrap">Gns. %</th>
+                      <th className="text-right py-2 whitespace-nowrap">
+                        <span className="sm:hidden">Mand.</span>
+                        <span className="hidden sm:inline">Mandater (median)</span>
+                      </th>
+                      <th className="text-right py-2 whitespace-nowrap hidden sm:table-cell">Interval (5–95 %)</th>
+                      <th className="text-right py-2 whitespace-nowrap">
+                        <span className="sm:hidden">Spærre</span>
+                        <span className="hidden sm:inline">Klarer grænsen</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -427,14 +433,14 @@ export default function HomePage() {
                         <tr key={letter} className="border-b last:border-0">
                           <td className="py-2">
                             <div className="flex items-center gap-2">
-                              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: party?.color }} />
+                              <span className="w-3 h-3 shrink-0 rounded-full" style={{ backgroundColor: party?.color }} />
                               <span className="font-medium">{party?.letter}</span>
                               <span className="text-muted-foreground hidden sm:inline">{party?.name}</span>
                             </div>
                           </td>
-                          <td className="text-right py-2 font-mono">{avg.mean.toFixed(1)} %</td>
+                          <td className="text-right py-2 font-mono whitespace-nowrap">{avg.mean.toFixed(1)} %</td>
                           <td className="text-right py-2 font-mono">{range?.median ?? 0}</td>
-                          <td className="text-right py-2 font-mono text-muted-foreground">
+                          <td className="text-right py-2 font-mono text-muted-foreground hidden sm:table-cell">
                             {range?.p5}–{range?.p95}
                           </td>
                           <td className="text-right py-2">
