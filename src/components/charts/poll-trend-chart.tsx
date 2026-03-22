@@ -22,6 +22,16 @@ interface PollTrendChartProps {
   selectedParties?: PartyLetter[];
 }
 
+const RANGES = [
+  { label: '3M',  months: 3 },
+  { label: '6M',  months: 6 },
+  { label: '1Å',  months: 12 },
+  { label: '2Å',  months: 24 },
+  { label: 'Alt', months: null },
+] as const;
+
+type RangeLabel = typeof RANGES[number]['label'];
+
 export function PollTrendChart({
   polls,
   height = 400,
@@ -29,17 +39,26 @@ export function PollTrendChart({
   selectedParties,
 }: PollTrendChartProps) {
   const [hiddenParties, setHiddenParties] = useState<Set<PartyLetter>>(new Set());
+  const [range, setRange] = useState<RangeLabel>('1Å');
 
   const data = useMemo(() => {
     const sorted = [...polls].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-    return sorted.map((poll) => ({
+
+    const selectedRange = RANGES.find(r => r.label === range)!;
+    const filtered = selectedRange.months === null ? sorted : (() => {
+      const cutoff = new Date(sorted[sorted.length - 1]?.date ?? new Date());
+      cutoff.setMonth(cutoff.getMonth() - selectedRange.months);
+      return sorted.filter(p => new Date(p.date) >= cutoff);
+    })();
+
+    return filtered.map((poll) => ({
       date: poll.date,
       institute: poll.institute,
       ...poll.results,
     }));
-  }, [polls]);
+  }, [polls, range]);
 
   const visibleParties = useMemo(() => {
     const parties = selectedParties ?? PARTY_ORDER;
@@ -67,6 +86,21 @@ export function PollTrendChart({
 
   return (
     <div>
+      <div className="flex justify-end gap-1 mb-3">
+        {RANGES.map(r => (
+          <button
+            key={r.label}
+            onClick={() => setRange(r.label)}
+            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+              range === r.label
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
