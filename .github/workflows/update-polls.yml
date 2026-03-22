@@ -1,0 +1,44 @@
+name: Update polls from Wikipedia
+
+on:
+  schedule:
+    # Every 30 minutes, offset to :05 and :35 to avoid GitHub Actions stampede
+    - cron: '5,35 * * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push commits back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Fetch polls from Wikipedia
+        id: fetch
+        run: python scripts/fetch-polls.py
+        # exit(0) = no new polls → step succeeds, commit step is skipped
+        # exit(1) = new polls found → step "fails", commit step runs
+        continue-on-error: true
+
+      - name: Commit and push new polls
+        if: steps.fetch.outcome == 'failure'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/polls.json
+          git diff --cached --quiet || git commit -m "chore: update polls from Wikipedia [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
