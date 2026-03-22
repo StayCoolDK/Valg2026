@@ -37,7 +37,7 @@ export default async function PartyDetailPage({
   const party = PARTIES.find((p) => p.letter === decodeURIComponent(partyId));
   if (!party) notFound();
 
-  const polls = getPolls();
+  const polls = await getPolls();
   const forecast = runForecast(polls);
   const avg = forecast.weightedAverages.find((a) => a.partyLetter === party.letter);
   const seats = forecast.seatAllocations.find((a) => a.partyLetter === party.letter)?.seats ?? 0;

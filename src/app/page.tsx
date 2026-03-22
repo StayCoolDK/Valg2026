@@ -24,6 +24,9 @@ import {
   Target,
 } from 'lucide-react';
 
+// Re-render this page on the server every 30 minutes to pick up new polls
+export const revalidate = 1800;
+
 /* ── Historiske valgdata ─────────────────────────────────── */
 
 const ELECTIONS = [
@@ -75,8 +78,8 @@ const ELECTIONS = [
 
 /* ── Side ────────────────────────────────────────────────── */
 
-export default function HomePage() {
-  const polls = getPolls();
+export default async function HomePage() {
+  const polls = await getPolls();
   const forecast = runForecast(polls);
   const { blocProbabilities, seatAllocations, seatRanges, thresholdRisks, weightedAverages } = forecast;
 
@@ -467,7 +470,7 @@ export default function HomePage() {
           <p className="text-muted-foreground mb-6">
             Vælg partier og se, om de kan danne flertal
           </p>
-          <KoalitionerSection />
+          <KoalitionerSection polls={polls} />
         </section>
 
         {/* ─── §7 Historik ───────────────────────────────── */}

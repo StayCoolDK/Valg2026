@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { getPolls } from '@/lib/data';
 import { runForecast, computeCoalitions } from '@/lib/forecast/forecast-engine';
 import { PARTIES, PARTY_ORDER, MAJORITY_SEATS } from '@/lib/constants';
-import { PartyLetter } from '@/lib/types';
+import { Poll, PartyLetter } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
@@ -18,10 +17,9 @@ const PRESET_COALITIONS = [
   { id: 'sfr', name: 'S + SF + R', parties: ['A', 'F', 'B'] as PartyLetter[] },
 ];
 
-export function KoalitionerSection() {
+export function KoalitionerSection({ polls }: { polls: Poll[] }) {
   const [selected, setSelected] = useState<Set<PartyLetter>>(new Set());
 
-  const polls = useMemo(() => getPolls(), []);
   const forecast = useMemo(() => runForecast(polls), [polls]);
   const coalitions = useMemo(() => computeCoalitions(forecast), [forecast]);
   const seatMap = useMemo(
