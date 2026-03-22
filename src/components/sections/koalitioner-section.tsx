@@ -130,7 +130,7 @@ export function KoalitionerSection() {
             <div
               className="absolute inset-y-0 left-0 rounded-full transition-all"
               style={{
-                width: `${Math.min(100, (totalSeats / MAJORITY_SEATS) * 100)}%`,
+                width: `${Math.min(100, (totalSeats / 175) * 100)}%`,
                 backgroundColor: hasMajority ? '#22c55e' : '#ef4444',
               }}
             />
@@ -139,10 +139,10 @@ export function KoalitionerSection() {
               style={{ left: `${(MAJORITY_SEATS / 175) * 100}%` }}
             />
           </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-            <span>0</span>
-            <span>{MAJORITY_SEATS} (flertal)</span>
-            <span>175</span>
+          <div className="relative text-xs text-muted-foreground mt-1">
+            <span className="absolute left-0">0</span>
+            <span className="absolute -translate-x-1/2" style={{ left: `${(MAJORITY_SEATS / 175) * 100}%` }}>{MAJORITY_SEATS} (flertal)</span>
+            <span className="absolute right-0">175</span>
           </div>
         </CardContent>
       </Card>
