@@ -82,6 +82,10 @@ export function computeWeightedAverages(
         max: 0,
         trend: 'stable',
         trendMagnitude: 0,
+        trend7d: 'stable' as const,
+        trendMagnitude7d: 0,
+        trend30d: 'stable' as const,
+        trendMagnitude30d: 0,
       });
       continue;
     }
