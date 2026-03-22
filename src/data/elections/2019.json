@@ -1,0 +1,18 @@
+{
+  "year": 2019,
+  "date": "2019-06-05",
+  "turnout": 84.6,
+  "government": "Socialdemokratiet (mindretalsregering)",
+  "primeMinister": "Mette Frederiksen",
+  "results": [
+    { "partyLetter": "A", "voteShare": 25.9, "seats": 48 },
+    { "partyLetter": "B", "voteShare": 8.6, "seats": 16 },
+    { "partyLetter": "C", "voteShare": 6.6, "seats": 12 },
+    { "partyLetter": "F", "voteShare": 7.7, "seats": 14 },
+    { "partyLetter": "I", "voteShare": 2.3, "seats": 4 },
+    { "partyLetter": "O", "voteShare": 8.7, "seats": 16 },
+    { "partyLetter": "V", "voteShare": 23.4, "seats": 43 },
+    { "partyLetter": "Ø", "voteShare": 6.9, "seats": 13 },
+    { "partyLetter": "Å", "voteShare": 3.0, "seats": 5 }
+  ]
+}

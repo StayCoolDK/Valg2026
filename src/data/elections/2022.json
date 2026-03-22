@@ -1,0 +1,20 @@
+{
+  "year": 2022,
+  "date": "2022-11-01",
+  "turnout": 84.1,
+  "government": "SVM-regeringen (Socialdemokratiet, Venstre, Moderaterne)",
+  "primeMinister": "Mette Frederiksen",
+  "results": [
+    { "partyLetter": "A", "voteShare": 27.5, "seats": 50 },
+    { "partyLetter": "B", "voteShare": 3.8, "seats": 7 },
+    { "partyLetter": "C", "voteShare": 5.5, "seats": 10 },
+    { "partyLetter": "F", "voteShare": 8.3, "seats": 15 },
+    { "partyLetter": "I", "voteShare": 7.9, "seats": 14 },
+    { "partyLetter": "M", "voteShare": 9.3, "seats": 16 },
+    { "partyLetter": "O", "voteShare": 2.6, "seats": 5 },
+    { "partyLetter": "V", "voteShare": 13.3, "seats": 23 },
+    { "partyLetter": "Æ", "voteShare": 8.1, "seats": 14 },
+    { "partyLetter": "Ø", "voteShare": 5.1, "seats": 9 },
+    { "partyLetter": "Å", "voteShare": 3.3, "seats": 6 }
+  ]
+}

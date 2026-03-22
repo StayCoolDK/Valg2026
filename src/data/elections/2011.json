@@ -1,0 +1,17 @@
+{
+  "year": 2011,
+  "date": "2011-09-15",
+  "turnout": 87.7,
+  "government": "Socialdemokratiet, Radikale Venstre, SF",
+  "primeMinister": "Helle Thorning-Schmidt",
+  "results": [
+    { "partyLetter": "A", "voteShare": 24.8, "seats": 44 },
+    { "partyLetter": "B", "voteShare": 9.5, "seats": 17 },
+    { "partyLetter": "C", "voteShare": 4.9, "seats": 8 },
+    { "partyLetter": "F", "voteShare": 9.2, "seats": 16 },
+    { "partyLetter": "I", "voteShare": 5.0, "seats": 9 },
+    { "partyLetter": "O", "voteShare": 12.3, "seats": 22 },
+    { "partyLetter": "V", "voteShare": 26.7, "seats": 47 },
+    { "partyLetter": "Ø", "voteShare": 6.7, "seats": 12 }
+  ]
+}

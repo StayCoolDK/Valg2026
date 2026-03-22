@@ -1,0 +1,18 @@
+{
+  "year": 2015,
+  "date": "2015-06-18",
+  "turnout": 85.9,
+  "government": "Venstre (mindretalsregering)",
+  "primeMinister": "Lars Løkke Rasmussen",
+  "results": [
+    { "partyLetter": "A", "voteShare": 26.3, "seats": 47 },
+    { "partyLetter": "B", "voteShare": 4.6, "seats": 8 },
+    { "partyLetter": "C", "voteShare": 3.4, "seats": 6 },
+    { "partyLetter": "F", "voteShare": 4.2, "seats": 7 },
+    { "partyLetter": "I", "voteShare": 7.5, "seats": 13 },
+    { "partyLetter": "O", "voteShare": 21.1, "seats": 37 },
+    { "partyLetter": "V", "voteShare": 19.5, "seats": 34 },
+    { "partyLetter": "Ø", "voteShare": 7.8, "seats": 14 },
+    { "partyLetter": "Å", "voteShare": 4.8, "seats": 9 }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Voxmeter",
+    "client": "Ritzau",
+    "methodology": "Telefon + web",
+    "typicalSampleSize": 1000,
+    "frequency": "Ugentlig",
+    "qualityRating": 0.9,
+    "houseEffects": { "A": 0.3, "V": -0.2, "I": 0.1, "F": -0.1 }
+  },
+  {
+    "name": "Epinion",
+    "client": "DR",
+    "methodology": "Web + telefon (rullende)",
+    "typicalSampleSize": 5500,
+    "frequency": "Løbende",
+    "qualityRating": 0.95,
+    "houseEffects": { "A": -0.2, "V": 0.3, "Ø": 0.2, "F": 0.1 }
+  },
+  {
+    "name": "Megafon",
+    "client": "TV 2 / Politiken",
+    "methodology": "Telefon + web",
+    "typicalSampleSize": 1200,
+    "frequency": "Hver 2. uge",
+    "qualityRating": 0.88,
+    "houseEffects": { "A": 0.1, "I": -0.3, "O": 0.2 }
+  },
+  {
+    "name": "Verian",
+    "client": "Berlingske",
+    "methodology": "Telefon",
+    "typicalSampleSize": 1000,
+    "frequency": "Ugentlig",
+    "qualityRating": 0.92,
+    "houseEffects": { "A": -0.1, "V": 0.2, "C": 0.1 }
+  },
+  {
+    "name": "YouGov",
+    "client": "B.T.",
+    "methodology": "Online panel",
+    "typicalSampleSize": 1500,
+    "frequency": "Ugentlig",
+    "qualityRating": 0.85,
+    "houseEffects": { "A": -0.4, "I": 0.3, "Ø": -0.2, "O": 0.3 }
+  },
+  {
+    "name": "Norstat",
+    "client": "Altinget",
+    "methodology": "Web",
+    "typicalSampleSize": 1000,
+    "frequency": "Månedlig",
+    "qualityRating": 0.82,
+    "houseEffects": {}
+  }
+]

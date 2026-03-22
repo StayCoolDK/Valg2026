@@ -13,7 +13,24 @@
       "WebFetch(domain:www.thelocal.dk)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --turbopack)",
-      "Bash(npx create-next-app@latest valg2026-temp --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --turbopack)"
+      "Bash(npx create-next-app@latest valg2026-temp --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --turbopack)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const polls = require\\(''./src/data/polls.json''\\); console.log\\(''Latest:'', polls[polls.length-1].date, polls[polls.length-1].institute\\); console.log\\(''Total:'', polls.length\\)\")",
+      "Bash(node -e \"const polls = require\\(''./src/data/polls.json''\\); const sorted = polls.sort\\(\\(a,b\\) => b.date.localeCompare\\(a.date\\)\\); sorted.slice\\(0,3\\).forEach\\(p => console.log\\(p.date, p.institute\\)\\)\")",
+      "WebFetch(domain:voxmeter.dk)",
+      "WebFetch(domain:www.dr.dk)",
+      "WebFetch(domain:piopio.dk)",
+      "WebFetch(domain:jv.dk)",
+      "WebFetch(domain:www.kristeligt-dagblad.dk)",
+      "WebFetch(domain:nyheder.tv2.dk)",
+      "Bash(node -e \":*)",
+      "WebFetch(domain:www.dst.dk)",
+      "Bash(for dir:*)",
+      "Bash(do rmdir:*)",
+      "Bash(done)",
+      "Bash(xargs basename:*)",
+      "Bash(gh auth:*)"
     ]
   }
 }
