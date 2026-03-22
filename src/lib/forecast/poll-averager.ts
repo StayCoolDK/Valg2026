@@ -114,7 +114,7 @@ export function computeWeightedAverages(
 
     const TREND_THRESHOLD = 0.3;
 
-    const computeTrend = (windowDays: number) => {
+    const computeTrend = (windowDays: number): { trend: 'up' | 'down' | 'stable'; trendMagnitude: number } => {
       const cutoff = new Date(
         new Date(refDate).getTime() - windowDays * 86_400_000,
       ).toISOString().slice(0, 10);
