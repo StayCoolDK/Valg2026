@@ -19,6 +19,8 @@ export interface ElectionNightData {
   lastUpdated: string;
   /** ISO timestamp for when our API assembled this payload */
   fetchedAt: string;
+  /** True if the payload is served from the last successful in-memory snapshot */
+  usingCachedFallback: boolean;
   /** Overall percentage of votes counted nationally (0-100) */
   totalCounted: number;
   /** Total valid votes counted so far */
@@ -55,6 +57,7 @@ export function createDemoData(): ElectionNightData {
   return {
     lastUpdated: new Date().toISOString(),
     fetchedAt: new Date().toISOString(),
+    usingCachedFallback: false,
     totalCounted: 0,
     totalVotes: 0,
     sourceStatusText: '',

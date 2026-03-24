@@ -76,7 +76,11 @@ export function HealthCheckClient() {
   }
 
   useEffect(() => {
-    runChecks();
+    const timer = window.setTimeout(() => {
+      void runChecks();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -112,7 +116,7 @@ export function HealthCheckClient() {
                   <CardDescription>{check.url}</CardDescription>
                 </div>
                 <Badge variant={check.ok ? 'secondary' : 'destructive'}>
-                  {check.loading ? 'Checker...' : check.ok ? 'OK' : 'Fejl'}
+                  {check.loading ? 'Checker...' : check.ok ? (check.data?.usingCachedFallback ? 'Fallback' : 'OK') : 'Fejl'}
                 </Badge>
               </div>
             </CardHeader>
@@ -136,6 +140,7 @@ export function HealthCheckClient() {
                       <p>Senest opdateret hos DST: <span className="text-foreground">{new Date(check.data.lastUpdated).toLocaleString('da-DK')}</span></p>
                       <p>Rapporterede storkredse: <span className="text-foreground">{check.data.reportedConstituencies}/{check.data.totalConstituencies}</span></p>
                       <p>Warnings: <span className="text-foreground">{check.data.warnings.length}</span></p>
+                      <p>Fallback: <span className="text-foreground">{check.data.usingCachedFallback ? 'Ja' : 'Nej'}</span></p>
                     </div>
                   </div>
 

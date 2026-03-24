@@ -127,7 +127,9 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
               <div>
                 <p className="font-medium text-foreground">Der er delvise eller forsinkede data fra DST</p>
                 <p className="text-muted-foreground">
-                  Siden viser de bedste tilgængelige officielle tal lige nu. Tjek tidspunktet og storkredsstatus nedenfor.
+                  {data.usingCachedFallback
+                    ? 'Siden viser senest kendte officielle snapshot, fordi en frisk hentning fejlede. Tjek tidspunktet og advarslerne nedenfor.'
+                    : 'Siden viser de bedste tilgængelige officielle tal lige nu. Tjek tidspunktet og storkredsstatus nedenfor.'}
                 </p>
               </div>
             </div>

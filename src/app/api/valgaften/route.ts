@@ -9,8 +9,9 @@ export const runtime = 'nodejs';
 const DST_BASE_2026 = 'https://www.dst.dk/valg/Valg2546527';
 // 2022 Folketingsvalg feed (for demo/testing with ?demo=true)
 const DST_BASE_2022 = 'https://www.dst.dk/valg/Valg1968094';
-const FETCH_TIMEOUT_MS = 8000;
-const FETCH_RETRIES = 2;
+const FETCH_TIMEOUT_MS = 15000;
+const FETCH_RETRIES = 3;
+const DST_USER_AGENT = 'Valg2026/1.0 (https://github.com/StayCoolDK/Valg2026)';
 
 // Known party letters we care about
 const KNOWN_LETTERS = new Set<string>(['A','B','C','F','H','I','M','O','V','Æ','Ø','Å']);
@@ -149,6 +150,7 @@ function parseOverviewFeed(xml: string, baseUrl: string): {
 const EMPTY_RESULT: ElectionNightData = {
   lastUpdated: new Date().toISOString(),
   fetchedAt: new Date().toISOString(),
+  usingCachedFallback: false,
   totalCounted: 0,
   totalVotes: 0,
   sourceStatusText: '',
@@ -162,6 +164,8 @@ const EMPTY_RESULT: ElectionNightData = {
   status: 'waiting',
 };
 
+const SNAPSHOT_CACHE = new Map<string, ElectionNightData>();
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -174,6 +178,10 @@ async function fetchXml(url: string): Promise<{ xml: string | null; warning: str
       const res = await fetch(url, {
         next: { revalidate: 30 },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        headers: {
+          'User-Agent': DST_USER_AGENT,
+          'Accept': 'application/xml,text/xml;q=0.9,*/*;q=0.8',
+        },
       });
 
       if (res.ok) {
@@ -213,8 +221,40 @@ function mapElectionStatus(
 export async function GET(request: NextRequest) {
   const demo = request.nextUrl.searchParams.get('demo') === 'true';
   const base = demo ? DST_BASE_2022 : DST_BASE_2026;
+  const cacheKey = demo ? 'demo' : 'live';
   const fetchedAt = new Date().toISOString();
   const warnings: string[] = [];
+  const fallback = SNAPSHOT_CACHE.get(cacheKey);
+
+  const respondWithFallback = (extraWarnings: string[]) => {
+    if (!fallback) {
+      return NextResponse.json(
+        {
+          ...EMPTY_RESULT,
+          fetchedAt,
+          usingCachedFallback: false,
+          hasPartialData: true,
+          warnings: Array.from(new Set(extraWarnings)),
+        },
+        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        ...fallback,
+        fetchedAt,
+        usingCachedFallback: true,
+        hasPartialData: true,
+        warnings: Array.from(new Set([
+          ...fallback.warnings,
+          'Viser senest kendte succesfulde DST-svar pga. midlertidig hentefejl.',
+          ...extraWarnings,
+        ])),
+      },
+      { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+    );
+  };
 
   try {
     // Step 1: Fetch the overview feed to discover result feed URLs
@@ -222,15 +262,7 @@ export async function GET(request: NextRequest) {
     if (overviewResult.warning) warnings.push(overviewResult.warning);
     const overviewXml = overviewResult.xml;
     if (!overviewXml) {
-      return NextResponse.json(
-        {
-          ...EMPTY_RESULT,
-          fetchedAt,
-          hasPartialData: true,
-          warnings,
-        },
-        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
-      );
+      return respondWithFallback(warnings);
     }
 
     const { nationalUrl, storkredsUrls } = parseOverviewFeed(overviewXml, base);
@@ -240,16 +272,19 @@ export async function GET(request: NextRequest) {
     if (nationalResult.warning) warnings.push(nationalResult.warning);
     const nationalXml = nationalResult.xml;
     if (!nationalXml) {
-      return NextResponse.json(
-        {
-          ...EMPTY_RESULT,
-          fetchedAt,
-          totalConstituencies: storkredsUrls.length,
-          hasPartialData: true,
-          warnings,
-        },
-        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
-      );
+      if (!fallback) {
+        return NextResponse.json(
+          {
+            ...EMPTY_RESULT,
+            fetchedAt,
+            totalConstituencies: storkredsUrls.length,
+            hasPartialData: true,
+            warnings,
+          },
+          { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+        );
+      }
+      return respondWithFallback(warnings);
     }
 
     const national = parseResultFeed(nationalXml);
@@ -260,6 +295,7 @@ export async function GET(request: NextRequest) {
         {
           ...EMPTY_RESULT,
           fetchedAt,
+          usingCachedFallback: false,
           lastUpdated: national.lastUpdated,
           sourceStatusText: national.statusText,
           totalConstituencies: storkredsUrls.length,
@@ -319,6 +355,7 @@ export async function GET(request: NextRequest) {
     const data: ElectionNightData = {
       lastUpdated: national.lastUpdated,
       fetchedAt,
+      usingCachedFallback: false,
       totalCounted,
       totalVotes: national.totalValid || national.totalCast,
       sourceStatusText: national.statusText,
@@ -333,21 +370,14 @@ export async function GET(request: NextRequest) {
       status,
     };
 
+    SNAPSHOT_CACHE.set(cacheKey, data);
+
     return NextResponse.json(data, {
       headers: { 'Cache-Control': 'no-store, max-age=0' },
     });
   } catch {
-    return NextResponse.json(
-      {
-        ...EMPTY_RESULT,
-        fetchedAt,
-        hasPartialData: true,
-        warnings: ['Valgaften-data kunne ikke behandles korrekt. API bruger fallback-svar.'],
-      },
-      {
-        status: 200,
-        headers: { 'Cache-Control': 'no-store, max-age=0' },
-      }
-    );
+    return respondWithFallback([
+      'Valgaften-data kunne ikke behandles korrekt. API bruger fallback-svar.',
+    ]);
   }
 }
