@@ -164,6 +164,72 @@ const EMPTY_RESULT: ElectionNightData = {
   status: 'waiting',
 };
 
+const DEMO_RESULT: ElectionNightData = {
+  lastUpdated: '2022-11-02T10:05:31',
+  fetchedAt: new Date().toISOString(),
+  usingCachedFallback: false,
+  totalCounted: 100,
+  totalVotes: 3533379,
+  sourceStatusText: 'Foreløbigt resultat (lokal demo)',
+  reportedConstituencies: 3,
+  totalConstituencies: 3,
+  hasPartialData: false,
+  warnings: [],
+  partyResults: [
+    { partyLetter: 'A', votes: 973244, pct: 27.5, seats: 0, change: 0 },
+    { partyLetter: 'V', votes: 470289, pct: 13.3, seats: 0, change: 0 },
+    { partyLetter: 'M', votes: 327659, pct: 9.3, seats: 0, change: 0 },
+    { partyLetter: 'F', votes: 292915, pct: 8.3, seats: 0, change: 0 },
+    { partyLetter: 'Æ', votes: 285614, pct: 8.1, seats: 0, change: 0 },
+    { partyLetter: 'I', votes: 278098, pct: 7.9, seats: 0, change: 0 },
+    { partyLetter: 'C', votes: 194808, pct: 5.5, seats: 0, change: 0 },
+    { partyLetter: 'Ø', votes: 182305, pct: 5.2, seats: 0, change: 0.1 },
+    { partyLetter: 'B', votes: 133802, pct: 3.8, seats: 0, change: 0 },
+    { partyLetter: 'Å', votes: 117629, pct: 3.3, seats: 0, change: 0 },
+    { partyLetter: 'O', votes: 93100, pct: 2.6, seats: 0, change: 0 },
+  ],
+  constituencies: [
+    {
+      id: '13',
+      name: 'Bornholms Storkreds',
+      counted: 100,
+      results: [
+        { partyLetter: 'A', votes: 8730, pct: 35.3 },
+        { partyLetter: 'V', votes: 4641, pct: 18.8 },
+        { partyLetter: 'F', votes: 1589, pct: 6.4 },
+        { partyLetter: 'Æ', votes: 1590, pct: 6.4 },
+        { partyLetter: 'O', votes: 1552, pct: 6.3 },
+      ],
+    },
+    {
+      id: '10',
+      name: 'Københavns Storkreds',
+      counted: 100,
+      results: [
+        { partyLetter: 'A', votes: 86611, pct: 19.0 },
+        { partyLetter: 'Ø', votes: 62640, pct: 13.8 },
+        { partyLetter: 'F', votes: 52020, pct: 11.4 },
+        { partyLetter: 'M', votes: 42966, pct: 9.4 },
+        { partyLetter: 'Å', votes: 42797, pct: 9.4 },
+      ],
+    },
+    {
+      id: '17',
+      name: 'Østjyllands Storkreds',
+      counted: 100,
+      results: [
+        { partyLetter: 'A', votes: 135679, pct: 26.8 },
+        { partyLetter: 'V', votes: 66294, pct: 13.1 },
+        { partyLetter: 'I', votes: 49372, pct: 9.8 },
+        { partyLetter: 'F', votes: 45352, pct: 9.0 },
+        { partyLetter: 'M', votes: 43972, pct: 8.7 },
+      ],
+    },
+  ],
+  isLive: true,
+  status: 'preliminary',
+};
+
 const SNAPSHOT_CACHE = new Map<string, ElectionNightData>();
 
 function sleep(ms: number): Promise<void> {
@@ -219,12 +285,28 @@ function mapElectionStatus(
 }
 
 export async function GET(request: NextRequest) {
-  const demo = request.nextUrl.searchParams.get('demo') === 'true';
+  const demoParam = request.nextUrl.searchParams.get('demo');
+  const useLocalDemo = demoParam === 'true' || demoParam === 'local';
+  const useDstDemo = demoParam === 'dst';
+  const demo = useLocalDemo || useDstDemo;
   const base = demo ? DST_BASE_2022 : DST_BASE_2026;
-  const cacheKey = demo ? 'demo' : 'live';
+  const cacheKey = useDstDemo ? 'demo-dst' : demo ? 'demo' : 'live';
   const fetchedAt = new Date().toISOString();
   const warnings: string[] = [];
   const fallback = SNAPSHOT_CACHE.get(cacheKey);
+
+  if (useLocalDemo) {
+    const demoPayload: ElectionNightData = {
+      ...DEMO_RESULT,
+      fetchedAt,
+      usingCachedFallback: false,
+      warnings: [],
+    };
+
+    return NextResponse.json(demoPayload, {
+      headers: { 'Cache-Control': 'no-store, max-age=0' },
+    });
+  }
 
   const respondWithFallback = (extraWarnings: string[]) => {
     if (!fallback) {

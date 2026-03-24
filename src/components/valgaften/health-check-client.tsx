@@ -17,7 +17,8 @@ type HealthState = {
 
 const ENDPOINTS: Array<Pick<HealthState, 'label' | 'url'>> = [
   { label: 'Live 2026', url: '/api/valgaften' },
-  { label: 'Demo 2022', url: '/api/valgaften?demo=true' },
+  { label: 'Demo 2022 (lokal)', url: '/api/valgaften?demo=true' },
+  { label: 'Demo 2022 (DST)', url: '/api/valgaften?demo=dst' },
 ];
 
 function buildInitialState(): HealthState[] {
