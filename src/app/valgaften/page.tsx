@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { LiveResults } from '@/components/valgaften/live-results';
-import { Radio } from 'lucide-react';
+import { Activity, Radio } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Valgaften — Live resultater',
@@ -24,6 +25,16 @@ export default function ValgaftenPage() {
         <Badge variant="outline" className="self-start text-xs">
           dst.dk/valg
         </Badge>
+      </div>
+
+      <div className="flex justify-end">
+        <Link
+          href="/valgaften/health"
+          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+        >
+          <Activity className="h-3.5 w-3.5" />
+          Driftsstatus
+        </Link>
       </div>
 
       <LiveResults />

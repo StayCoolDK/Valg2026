@@ -17,10 +17,22 @@ export interface ConstituencyResult {
 export interface ElectionNightData {
   /** ISO timestamp of last update */
   lastUpdated: string;
+  /** ISO timestamp for when our API assembled this payload */
+  fetchedAt: string;
   /** Overall percentage of votes counted nationally (0-100) */
   totalCounted: number;
   /** Total valid votes counted so far */
   totalVotes: number;
+  /** Human-readable DST status message */
+  sourceStatusText: string;
+  /** Number of storkredse with published results */
+  reportedConstituencies: number;
+  /** Total number of storkredse discovered in the DST overview feed */
+  totalConstituencies: number;
+  /** Whether the payload is incomplete or degraded */
+  hasPartialData: boolean;
+  /** Any warnings that should be surfaced in the UI */
+  warnings: string[];
   /** National party results (aggregated) */
   partyResults: {
     partyLetter: PartyLetter;
@@ -42,8 +54,14 @@ export interface ElectionNightData {
 export function createDemoData(): ElectionNightData {
   return {
     lastUpdated: new Date().toISOString(),
+    fetchedAt: new Date().toISOString(),
     totalCounted: 0,
     totalVotes: 0,
+    sourceStatusText: '',
+    reportedConstituencies: 0,
+    totalConstituencies: 0,
+    hasPartialData: false,
+    warnings: [],
     partyResults: [],
     constituencies: [],
     isLive: false,

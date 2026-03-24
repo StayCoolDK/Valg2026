@@ -3,10 +3,14 @@ import { PARTIES } from '@/lib/constants';
 import type { PartyLetter } from '@/lib/types';
 import type { ElectionNightData, ConstituencyResult } from '@/lib/types/election-night';
 
+export const runtime = 'nodejs';
+
 // 2026 Folketingsvalg feed (live from dst.dk/valg/xml.htm)
 const DST_BASE_2026 = 'https://www.dst.dk/valg/Valg2546527';
 // 2022 Folketingsvalg feed (for demo/testing with ?demo=true)
 const DST_BASE_2022 = 'https://www.dst.dk/valg/Valg1968094';
+const FETCH_TIMEOUT_MS = 8000;
+const FETCH_RETRIES = 2;
 
 // Known party letters we care about
 const KNOWN_LETTERS = new Set<string>(['A','B','C','F','H','I','M','O','V','Æ','Ø','Å']);
@@ -144,25 +148,52 @@ function parseOverviewFeed(xml: string, baseUrl: string): {
 
 const EMPTY_RESULT: ElectionNightData = {
   lastUpdated: new Date().toISOString(),
+  fetchedAt: new Date().toISOString(),
   totalCounted: 0,
   totalVotes: 0,
+  sourceStatusText: '',
+  reportedConstituencies: 0,
+  totalConstituencies: 0,
+  hasPartialData: false,
+  warnings: [],
   partyResults: [],
   constituencies: [],
   isLive: false,
   status: 'waiting',
 };
 
-async function fetchXml(url: string): Promise<string | null> {
-  try {
-    const res = await fetch(url, {
-      next: { revalidate: 30 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (res.ok) return normalizeDstText(await res.text());
-  } catch {
-    // fail silently
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchXml(url: string): Promise<{ xml: string | null; warning: string | null }> {
+  let lastError: string | null = null;
+
+  for (let attempt = 1; attempt <= FETCH_RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, {
+        next: { revalidate: 30 },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+
+      if (res.ok) {
+        return { xml: normalizeDstText(await res.text()), warning: null };
+      }
+
+      lastError = `HTTP ${res.status}`;
+    } catch (error) {
+      lastError = error instanceof Error ? error.name : 'Unknown error';
+    }
+
+    if (attempt < FETCH_RETRIES) {
+      await sleep(250 * attempt);
+    }
   }
-  return null;
+
+  return {
+    xml: null,
+    warning: `Kunne ikke hente ${url.split('/').slice(-1)[0]} fra DST (${lastError ?? 'ukendt fejl'}).`,
+  };
 }
 
 function mapElectionStatus(
@@ -182,30 +213,60 @@ function mapElectionStatus(
 export async function GET(request: NextRequest) {
   const demo = request.nextUrl.searchParams.get('demo') === 'true';
   const base = demo ? DST_BASE_2022 : DST_BASE_2026;
+  const fetchedAt = new Date().toISOString();
+  const warnings: string[] = [];
 
   try {
     // Step 1: Fetch the overview feed to discover result feed URLs
-    const overviewXml = await fetchXml(`${base}/xml/valgdag.xml`);
+    const overviewResult = await fetchXml(`${base}/xml/valgdag.xml`);
+    if (overviewResult.warning) warnings.push(overviewResult.warning);
+    const overviewXml = overviewResult.xml;
     if (!overviewXml) {
-      return NextResponse.json(EMPTY_RESULT);
+      return NextResponse.json(
+        {
+          ...EMPTY_RESULT,
+          fetchedAt,
+          hasPartialData: true,
+          warnings,
+        },
+        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
     }
 
     const { nationalUrl, storkredsUrls } = parseOverviewFeed(overviewXml, base);
 
     // Step 2: Fetch the national result feed
-    const nationalXml = await fetchXml(nationalUrl);
+    const nationalResult = await fetchXml(nationalUrl);
+    if (nationalResult.warning) warnings.push(nationalResult.warning);
+    const nationalXml = nationalResult.xml;
     if (!nationalXml) {
-      return NextResponse.json(EMPTY_RESULT);
+      return NextResponse.json(
+        {
+          ...EMPTY_RESULT,
+          fetchedAt,
+          totalConstituencies: storkredsUrls.length,
+          hasPartialData: true,
+          warnings,
+        },
+        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
     }
 
     const national = parseResultFeed(nationalXml);
 
     // Status 0 = no results yet
     if (national.statusCode === 0) {
-      return NextResponse.json({
-        ...EMPTY_RESULT,
-        lastUpdated: national.lastUpdated,
-      });
+      return NextResponse.json(
+        {
+          ...EMPTY_RESULT,
+          fetchedAt,
+          lastUpdated: national.lastUpdated,
+          sourceStatusText: national.statusText,
+          totalConstituencies: storkredsUrls.length,
+          warnings,
+        },
+        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
     }
 
     // Step 3: Fetch storkreds results in parallel
@@ -214,7 +275,8 @@ export async function GET(request: NextRequest) {
     if (storkredsUrls.length > 0) {
       const storkredsResults = await Promise.allSettled(
         storkredsUrls.map(async (sk) => {
-          const xml = await fetchXml(sk.url);
+          const { xml, warning } = await fetchXml(sk.url);
+          if (warning) warnings.push(warning);
           if (!xml) return null;
           const result = parseResultFeed(xml);
           if (result.statusCode === 0) return null;
@@ -256,16 +318,36 @@ export async function GET(request: NextRequest) {
 
     const data: ElectionNightData = {
       lastUpdated: national.lastUpdated,
+      fetchedAt,
       totalCounted,
       totalVotes: national.totalValid || national.totalCast,
+      sourceStatusText: national.statusText,
+      reportedConstituencies,
+      totalConstituencies: storkredsUrls.length,
+      hasPartialData:
+        warnings.length > 0 || (storkredsUrls.length > 0 && reportedConstituencies < storkredsUrls.length),
+      warnings: Array.from(new Set(warnings)),
       partyResults: national.parties,
-      constituencies,
+      constituencies: constituencies.sort((a, b) => a.name.localeCompare(b.name, 'da')),
       isLive: status !== 'waiting',
       status,
     };
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'no-store, max-age=0' },
+    });
   } catch {
-    return NextResponse.json(EMPTY_RESULT, { status: 200 });
+    return NextResponse.json(
+      {
+        ...EMPTY_RESULT,
+        fetchedAt,
+        hasPartialData: true,
+        warnings: ['Valgaften-data kunne ikke behandles korrekt. API bruger fallback-svar.'],
+      },
+      {
+        status: 200,
+        headers: { 'Cache-Control': 'no-store, max-age=0' },
+      }
+    );
   }
 }

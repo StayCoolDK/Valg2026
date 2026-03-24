@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { PARTIES, getParty, MAJORITY_SEATS, BLOC_COLORS, BLOC_NAMES, ELECTION_DATE } from '@/lib/constants';
 import type { ElectionNightData } from '@/lib/types/election-night';
 import type { Bloc } from '@/lib/types';
-import { Radio, Clock, CheckCircle2, TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
+import { Radio, Clock, CheckCircle2, TrendingUp, TrendingDown, Minus, RefreshCw, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 const POLL_INTERVAL = 30_000; // 30 seconds
 const ELECTION_NIGHT_START = `${ELECTION_DATE}T20:00:00+01:00`;
@@ -101,6 +101,10 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
           DST senest {new Date(data.lastUpdated).toLocaleTimeString('da-DK')}
         </div>
 
+        <div className="text-sm text-muted-foreground">
+          {data.reportedConstituencies}/{data.totalConstituencies || 10} storkredse rapporteret
+        </div>
+
         {lastFetch && (
           <div className="text-xs text-muted-foreground ml-auto flex items-center gap-1.5">
             <button
@@ -115,6 +119,34 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
         )}
       </div>
 
+      {data.hasPartialData ? (
+        <Card className="border-amber-300/60 bg-amber-50/60 dark:border-amber-500/40 dark:bg-amber-950/20">
+          <CardContent className="pt-6 space-y-2">
+            <div className="flex items-start gap-2 text-sm">
+              <AlertTriangle className="h-4 w-4 mt-0.5 text-amber-600" />
+              <div>
+                <p className="font-medium text-foreground">Der er delvise eller forsinkede data fra DST</p>
+                <p className="text-muted-foreground">
+                  Siden viser de bedste tilgængelige officielle tal lige nu. Tjek tidspunktet og storkredsstatus nedenfor.
+                </p>
+              </div>
+            </div>
+            {data.warnings.length > 0 && (
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {data.warnings.map((warning) => (
+                  <li key={warning}>• {warning}</li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+          Officielle DST-data er hentet uden kendte advarsler i denne opdatering.
+        </div>
+      )}
+
       {/* Counted progress bar */}
       <div className="space-y-1">
         <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -125,6 +157,9 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
         </div>
         <p className="text-xs text-muted-foreground text-right">
           {data.totalCounted.toFixed(1)}% af stemmerne optalt
+        </p>
+        <p className="text-xs text-muted-foreground text-right">
+          DST-status: {data.sourceStatusText || 'Ingen status endnu'}
         </p>
       </div>
 
@@ -236,6 +271,7 @@ function WaitingState() {
       <div className="text-xs text-muted-foreground space-y-1 text-center">
         <p>Data leveres af Danmarks Statistik (dst.dk)</p>
         <p>Siden tjekker automatisk for nye resultater hvert 30. sekund</p>
+        <p>Hvis DST er forsinket eller mangler enkelte feeds, bliver det vist tydeligt her.</p>
       </div>
     </div>
   );
