@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { SeatAllocation, PartyLetter } from '@/lib/types';
-import { PARTIES, PARTY_ORDER, TOTAL_SEATS, getPartyColor } from '@/lib/constants';
+import { PARTIES, PARTY_ORDER, TOTAL_SEATS } from '@/lib/constants';
 
 interface HemicycleChartProps {
   allocations: SeatAllocation[];
@@ -46,7 +46,10 @@ export function HemicycleChart({ allocations }: HemicycleChartProps) {
   const [mounted, setMounted] = useState(false);
   const [hovered, setHovered] = useState<{ name: string; letter: string; x: number; y: number } | null>(null);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const positions = generateHemicyclePositions(TOTAL_SEATS);
 

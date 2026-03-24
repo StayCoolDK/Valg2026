@@ -14,12 +14,13 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PARTIES, PARTY_ORDER, getPartyColor, getParty, MAJORITY_SEATS, BLOC_COLORS, BLOC_NAMES, ELECTION_DATE } from '@/lib/constants';
+import { PARTIES, getParty, MAJORITY_SEATS, BLOC_COLORS, BLOC_NAMES, ELECTION_DATE } from '@/lib/constants';
 import type { ElectionNightData } from '@/lib/types/election-night';
-import type { PartyLetter, Bloc } from '@/lib/types';
+import type { Bloc } from '@/lib/types';
 import { Radio, Clock, CheckCircle2, TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
 
 const POLL_INTERVAL = 30_000; // 30 seconds
+const ELECTION_NIGHT_START = `${ELECTION_DATE}T20:00:00+01:00`;
 
 const STATUS_LABELS: Record<ElectionNightData['status'], string> = {
   waiting: 'Venter på resultater',
@@ -32,7 +33,7 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
   const [data, setData] = useState<ElectionNightData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const autoRefresh = true;
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,6 +95,10 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
 
         <div className="text-sm text-muted-foreground">
           {data.totalVotes.toLocaleString('da-DK')} stemmer
+        </div>
+
+        <div className="text-sm text-muted-foreground">
+          DST senest {new Date(data.lastUpdated).toLocaleTimeString('da-DK')}
         </div>
 
         {lastFetch && (
@@ -180,7 +185,7 @@ export function LiveResults({ demo = false }: { demo?: boolean }) {
 }
 
 function WaitingState() {
-  const electionDate = new Date(ELECTION_DATE + 'T20:00:00+01:00');
+  const electionDate = new Date(ELECTION_NIGHT_START);
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -189,6 +194,7 @@ function WaitingState() {
   }, []);
 
   const diff = electionDate.getTime() - now.getTime();
+  const hasStarted = diff <= 0;
   const days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
   const hours = Math.max(0, Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
   const minutes = Math.max(0, Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)));
@@ -199,19 +205,19 @@ function WaitingState() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm">
           <Clock className="h-4 w-4" />
-          Valgaften starter kl. 20:00
+          {hasStarted ? 'Valgstederne er lukket' : 'Valgaften starter kl. 20:00'}
         </div>
         <h2 className="text-2xl font-bold">
-          Resultater kommer snart
+          {hasStarted ? 'Venter på de første officielle resultater' : 'Resultater kommer snart'}
         </h2>
         <p className="text-muted-foreground max-w-md">
-          Når valgstederne lukker kl. 20:00 den 24. marts 2026 begynder
-          optællingen. Denne side opdateres automatisk med live-resultater
-          fra Danmarks Statistik.
+          {hasStarted
+            ? 'Danmarks Statistik har endnu ikke offentliggjort de første tal. Denne side tjekker automatisk for nye resultater hvert 30. sekund og skifter til livevisning, så snart de lander.'
+            : 'Når valgstederne lukker kl. 20:00 den 24. marts 2026 begynder optællingen. Denne side opdateres automatisk med live-resultater fra Danmarks Statistik.'}
         </p>
       </div>
 
-      {diff > 0 && (
+      {!hasStarted && (
         <div className="grid grid-cols-4 gap-4 text-center">
           {[
             { value: days, label: 'dage' },

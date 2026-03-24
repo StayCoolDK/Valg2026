@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
+export const revalidate = 300;
+
 export function generateStaticParams() {
   return PARTY_ORDER.map((letter) => ({
     partyId: letter,
@@ -42,8 +44,6 @@ export default async function PartyDetailPage({
   const avg = forecast.weightedAverages.find((a) => a.partyLetter === party.letter);
   const seats = forecast.seatAllocations.find((a) => a.partyLetter === party.letter)?.seats ?? 0;
   const range = forecast.seatRanges.find((r) => r.partyLetter === party.letter);
-  const threshold = forecast.thresholdRisks.find((t) => t.partyLetter === party.letter);
-
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <Link href="/#partier" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">

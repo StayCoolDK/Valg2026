@@ -14,18 +14,17 @@ import { KoalitionerSection } from '@/components/sections/koalitioner-section';
 import { getPolls } from '@/lib/data';
 import { runForecast } from '@/lib/forecast/forecast-engine';
 import {
-  PARTIES, PARTY_ORDER, getParty, getPartyColor,
+  PARTIES, PARTY_ORDER, getParty,
   BLOC_COLORS, BLOC_NAMES, ELECTION_DATE, MAJORITY_SEATS, INSTITUTES,
 } from '@/lib/constants';
 import {
   CalendarDays,
   TrendingUp,
   TrendingDown,
-  Target,
 } from 'lucide-react';
 
-// Re-render this page on the server every 30 minutes to pick up new polls
-export const revalidate = 1800;
+// Re-render this page on the server every 5 minutes to pick up new polls
+export const revalidate = 300;
 
 /* ── Historiske valgdata ─────────────────────────────────── */
 

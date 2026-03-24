@@ -11,15 +11,26 @@ const DST_BASE_2022 = 'https://www.dst.dk/valg/Valg1968094';
 // Known party letters we care about
 const KNOWN_LETTERS = new Set<string>(['A','B','C','F','H','I','M','O','V','Æ','Ø','Å']);
 
+function normalizeDstText(value: string): string {
+  const trimmed = value.replace(/^\uFEFF/, '').trim();
+  if (!/[ÃÂï»¿]/.test(trimmed)) return trimmed;
+
+  try {
+    return Buffer.from(trimmed, 'latin1').toString('utf8').replace(/^\uFEFF/, '').trim();
+  } catch {
+    return trimmed;
+  }
+}
+
 function attr(element: string, name: string): string {
   // Use word boundary or start-of-attribute to avoid partial matches (e.g. "filnavn" matching "Navn")
   const re = new RegExp(`(?:\\s|^)${name}="([^"]*)"`, 'i');
-  return element.match(re)?.[1]?.trim() ?? '';
+  return normalizeDstText(element.match(re)?.[1] ?? '');
 }
 
 function innerText(xml: string, tag: string): string {
   const re = new RegExp(`<${tag}[^>]*>([^<]*)</${tag}>`, 'i');
-  return xml.match(re)?.[1]?.trim() ?? '';
+  return normalizeDstText(xml.match(re)?.[1] ?? '');
 }
 
 function selfClosingTags(xml: string, tag: string): string[] {
@@ -36,6 +47,7 @@ function selfClosingTags(xml: string, tag: string): string[] {
 function parseResultFeed(xml: string): {
   statusCode: number;
   statusText: string;
+  lastUpdated: string;
   turnoutPct: number;
   eligible: number;
   parties: ElectionNightData['partyResults'];
@@ -47,6 +59,7 @@ function parseResultFeed(xml: string): {
 } {
   const statusCode = parseInt(attr(xml, 'Kode') || '0', 10);
   const statusText = innerText(xml, 'Status');
+  const lastUpdated = innerText(xml, 'SenestDannetIso') || innerText(xml, 'SenestRettetIso') || new Date().toISOString();
   const turnoutPct = parseFloat(innerText(xml, 'DeltagelsePct') || '0');
   const eligible = parseInt(innerText(xml, 'Stemmeberettigede') || '0', 10);
   const totalValid = parseInt(innerText(xml, 'IAltGyldigeStemmer') || '0', 10);
@@ -84,6 +97,7 @@ function parseResultFeed(xml: string): {
   return {
     statusCode,
     statusText,
+    lastUpdated,
     turnoutPct,
     eligible,
     parties: parties.sort((a, b) => b.pct - a.pct),
@@ -144,11 +158,25 @@ async function fetchXml(url: string): Promise<string | null> {
       next: { revalidate: 30 },
       signal: AbortSignal.timeout(8000),
     });
-    if (res.ok) return await res.text();
+    if (res.ok) return normalizeDstText(await res.text());
   } catch {
     // fail silently
   }
   return null;
+}
+
+function mapElectionStatus(
+  statusCode: number,
+  statusText: string,
+  totalCast: number
+): ElectionNightData['status'] {
+  const normalized = statusText.toLowerCase();
+
+  if (statusCode === 0 && totalCast === 0) return 'waiting';
+  if (statusCode === 12 || normalized.includes('endeligt')) return 'final';
+  if (statusCode >= 11 || normalized.includes('foreløbigt')) return 'preliminary';
+  if (totalCast > 0 || normalized.includes('optæll')) return 'counting';
+  return 'waiting';
 }
 
 export async function GET(request: NextRequest) {
@@ -176,12 +204,13 @@ export async function GET(request: NextRequest) {
     if (national.statusCode === 0) {
       return NextResponse.json({
         ...EMPTY_RESULT,
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: national.lastUpdated,
       });
     }
 
     // Step 3: Fetch storkreds results in parallel
     const constituencies: ConstituencyResult[] = [];
+    let reportedConstituencies = 0;
     if (storkredsUrls.length > 0) {
       const storkredsResults = await Promise.allSettled(
         storkredsUrls.map(async (sk) => {
@@ -205,23 +234,33 @@ export async function GET(request: NextRequest) {
       for (const r of storkredsResults) {
         if (r.status === 'fulfilled' && r.value) {
           constituencies.push(r.value);
+          reportedConstituencies += 1;
         }
       }
     }
 
-    // Map DST status codes to our status type
-    let status: ElectionNightData['status'] = 'waiting';
-    if (national.statusCode === 1) status = 'counting';
-    if (national.statusCode === 12) status = 'final';
-    if (national.statusCode === 11) status = 'preliminary';
+    const status = mapElectionStatus(
+      national.statusCode,
+      national.statusText,
+      national.totalCast
+    );
+
+    const totalCounted =
+      status === 'final'
+        ? 100
+        : storkredsUrls.length > 0
+          ? (reportedConstituencies / storkredsUrls.length) * 100
+          : national.totalCast > 0
+            ? 1
+            : 0;
 
     const data: ElectionNightData = {
-      lastUpdated: new Date().toISOString(),
-      totalCounted: national.turnoutPct > 0 ? 100 : 0, // national feed = all counted when status=1
-      totalVotes: national.totalCast,
+      lastUpdated: national.lastUpdated,
+      totalCounted,
+      totalVotes: national.totalValid || national.totalCast,
       partyResults: national.parties,
       constituencies,
-      isLive: national.statusCode === 1 || national.statusCode >= 11,
+      isLive: status !== 'waiting',
       status,
     };
 

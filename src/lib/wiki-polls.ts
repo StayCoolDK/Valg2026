@@ -11,6 +11,7 @@ import { Poll, PollingInstitute } from './types';
 
 const DA_WIKI_API = 'https://da.wikipedia.org/w/api.php';
 const EN_WIKI_API = 'https://en.wikipedia.org/w/api.php';
+const WIKI_REVALIDATE_SECONDS = 300;
 
 const SOURCES: [string, string][] = [
   [DA_WIKI_API, 'Meningsmålinger_forud_for_folketingsvalget_2026'],
@@ -27,6 +28,7 @@ const KNOWN_INSTITUTES: Record<string, PollingInstitute> = {
   megafon: 'Megafon',
   verian: 'Verian',
   norstat: 'Norstat',
+  gallup: 'Gallup',
 };
 
 const INSTITUTE_TO_SOURCE: Record<string, string> = {
@@ -55,6 +57,25 @@ const PARTY_HEADERS: Record<string, string> = {
   'i': 'I', 'm': 'M', 'o': 'O', 'v': 'V', 'æ': 'Æ',
   'ø': 'Ø', 'å': 'Å',
 };
+
+function normalizeWikiCell(raw: string): string {
+  const withoutMarkup = raw
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1')
+    .replace(/\[(https?:\/\/[^\s\]]+)\s+([^\]]+)\]/gi, '$2')
+    .replace(/\{\{[^{}]*\}\}/g, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\[\d+\]/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/'{2,}/g, '')
+    .trim();
+
+  const content = withoutMarkup.includes('|')
+    ? withoutMarkup.split('|').pop() ?? withoutMarkup
+    : withoutMarkup;
+
+  return content.replace(/\s+/g, ' ').trim();
+}
 
 /** Parse "22. marts" or "22 March" → {day, month}. Strips range prefix "14.–". */
 function parseDayMonth(raw: string): { day: number; month: number } | null {
@@ -98,7 +119,7 @@ function parseWikitext(wikitext: string): Poll[] {
       .split('\n')
       .filter(l => l.trimStart().startsWith('!'))
       .flatMap(l => l.replace(/^!+/, '').split('!!'))
-      .map(h => h.replace(/\[\[([^\]|]*\|)?([^\]]*)\]\]/g, '$2').replace(/'{2,}/g, '').trim().toLowerCase());
+      .map(h => normalizeWikiCell(h).toLowerCase());
 
     headerCols = {};
     rawHeaders.forEach((h, i) => {
@@ -119,10 +140,7 @@ function parseWikitext(wikitext: string): Poll[] {
         .split('\n')
         .filter(l => l.trimStart().startsWith('|') && !l.trimStart().startsWith('|}'))
         .flatMap(l => l.replace(/^\|+/, '').split('||'))
-        .map(c => c.replace(/\[\[([^\]|]*\|)?([^\]]*)\]\]/g, '$2')
-                   .replace(/\{\{[^}]*\}\}/g, '')
-                   .replace(/\[\d+\]/g, '')
-                   .trim());
+        .map(c => normalizeWikiCell(c));
 
       if (cells.length < 4) continue;
 
@@ -202,7 +220,7 @@ async function fetchFromSource(apiUrl: string, pageTitle: string): Promise<Poll[
 
   try {
     const res = await fetch(url.toString(), {
-      next: { revalidate: 1800 },
+      next: { revalidate: WIKI_REVALIDATE_SECONDS },
       headers: { 'User-Agent': 'Valg2026/1.0 (https://github.com/StayCoolDK/Valg2026)' },
     });
     if (!res.ok) return null;

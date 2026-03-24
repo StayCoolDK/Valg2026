@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Menu, X, BarChart3 } from 'lucide-react';
+import { Menu, X, BarChart3, Radio } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/#blokoversigt', label: 'Overblik' },
@@ -14,8 +16,8 @@ const NAV_ITEMS = [
   { href: '/#koalitioner', label: 'Koalitioner' },
   { href: '/#historik', label: 'Historik' },
   { href: '/#metodologi', label: 'Metodologi' },
-  { href: '/valgaften', label: 'Valgaften' },
 ];
+const VALGAFTEN_ITEM = { href: '/valgaften', label: 'Valgaften Live' };
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -67,6 +69,20 @@ export function SiteHeader() {
 
         <div className="flex-1" />
 
+        <Link
+          href={VALGAFTEN_ITEM.href}
+          className={cn(
+            buttonVariants({
+              variant: pathname === VALGAFTEN_ITEM.href ? 'secondary' : 'default',
+              size: 'sm',
+            }),
+            'hidden md:inline-flex shadow-sm'
+          )}
+        >
+          <Radio className="h-3.5 w-3.5" />
+          {VALGAFTEN_ITEM.label}
+        </Link>
+
         {/* Mobile nav */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger className="md:hidden inline-flex items-center justify-center rounded-md text-sm font-medium h-9 w-9 hover:bg-accent">
@@ -75,6 +91,14 @@ export function SiteHeader() {
           <SheetContent side="right" className="w-64">
             <SheetTitle className="text-lg font-bold mb-4">Navigation</SheetTitle>
             <nav className="flex flex-col gap-2">
+              <Link
+                href={VALGAFTEN_ITEM.href}
+                onClick={() => setOpen(false)}
+                className={cn(buttonVariants({ size: 'default' }), 'w-full justify-center shadow-sm')}
+              >
+                <Radio className="h-4 w-4" />
+                {VALGAFTEN_ITEM.label}
+              </Link>
               {NAV_ITEMS.map((item) => (
                 <a
                   key={item.href}
