@@ -142,6 +142,7 @@ export function HealthCheckClient() {
                       <p>Rapporterede storkredse: <span className="text-foreground">{check.data.reportedConstituencies}/{check.data.totalConstituencies}</span></p>
                       <p>Warnings: <span className="text-foreground">{check.data.warnings.length}</span></p>
                       <p>Fallback: <span className="text-foreground">{check.data.usingCachedFallback ? 'Ja' : 'Nej'}</span></p>
+                      <p>Fallback-kilde: <span className="text-foreground">{check.data.fallbackSource}</span></p>
                     </div>
                   </div>
 

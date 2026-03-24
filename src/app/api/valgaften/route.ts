@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PARTIES } from '@/lib/constants';
 import type { PartyLetter } from '@/lib/types';
 import type { ElectionNightData, ConstituencyResult } from '@/lib/types/election-night';
+import snapshotStore from '@/data/election-night-snapshots.json';
 
 export const runtime = 'nodejs';
 
@@ -9,9 +10,17 @@ export const runtime = 'nodejs';
 const DST_BASE_2026 = 'https://www.dst.dk/valg/Valg2546527';
 // 2022 Folketingsvalg feed (for demo/testing with ?demo=true)
 const DST_BASE_2022 = 'https://www.dst.dk/valg/Valg1968094';
-const FETCH_TIMEOUT_MS = 15000;
-const FETCH_RETRIES = 3;
+const FETCH_TIMEOUT_MS = 4000;
+const FETCH_RETRIES = 1;
 const DST_USER_AGENT = 'Valg2026/1.0 (https://github.com/StayCoolDK/Valg2026)';
+
+type SnapshotStore = {
+  updatedAt: string;
+  live: ElectionNightData | null;
+  demoDst: ElectionNightData | null;
+};
+
+const SNAPSHOTS = snapshotStore as SnapshotStore;
 
 // Known party letters we care about
 const KNOWN_LETTERS = new Set<string>(['A','B','C','F','H','I','M','O','V','Æ','Ø','Å']);
@@ -151,6 +160,7 @@ const EMPTY_RESULT: ElectionNightData = {
   lastUpdated: new Date().toISOString(),
   fetchedAt: new Date().toISOString(),
   usingCachedFallback: false,
+  fallbackSource: 'none',
   totalCounted: 0,
   totalVotes: 0,
   sourceStatusText: '',
@@ -168,6 +178,7 @@ const DEMO_RESULT: ElectionNightData = {
   lastUpdated: '2022-11-02T10:05:31',
   fetchedAt: new Date().toISOString(),
   usingCachedFallback: false,
+  fallbackSource: 'none',
   totalCounted: 100,
   totalVotes: 3533379,
   sourceStatusText: 'Foreløbigt resultat (lokal demo)',
@@ -232,6 +243,19 @@ const DEMO_RESULT: ElectionNightData = {
 
 const SNAPSHOT_CACHE = new Map<string, ElectionNightData>();
 
+function getStoredSnapshot(cacheKey: string): ElectionNightData | null {
+  const snapshot = cacheKey === 'demo-dst' ? SNAPSHOTS.demoDst : cacheKey === 'live' ? SNAPSHOTS.live : null;
+  if (!snapshot) return null;
+
+  return {
+    ...snapshot,
+    warnings: Array.from(new Set(snapshot.warnings)),
+    usingCachedFallback: true,
+    fallbackSource: 'snapshot',
+    hasPartialData: snapshot.hasPartialData || snapshot.warnings.length > 0,
+  };
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -293,13 +317,14 @@ export async function GET(request: NextRequest) {
   const cacheKey = useDstDemo ? 'demo-dst' : demo ? 'demo' : 'live';
   const fetchedAt = new Date().toISOString();
   const warnings: string[] = [];
-  const fallback = SNAPSHOT_CACHE.get(cacheKey);
+  const fallback = SNAPSHOT_CACHE.get(cacheKey) ?? getStoredSnapshot(cacheKey);
 
   if (useLocalDemo) {
     const demoPayload: ElectionNightData = {
       ...DEMO_RESULT,
       fetchedAt,
       usingCachedFallback: false,
+      fallbackSource: 'none',
       warnings: [],
     };
 
@@ -315,6 +340,7 @@ export async function GET(request: NextRequest) {
           ...EMPTY_RESULT,
           fetchedAt,
           usingCachedFallback: false,
+          fallbackSource: 'none',
           hasPartialData: true,
           warnings: Array.from(new Set(extraWarnings)),
         },
@@ -326,11 +352,13 @@ export async function GET(request: NextRequest) {
       {
         ...fallback,
         fetchedAt,
-        usingCachedFallback: true,
+        usingCachedFallback: fallback.fallbackSource !== 'none',
         hasPartialData: true,
         warnings: Array.from(new Set([
           ...fallback.warnings,
-          'Viser senest kendte succesfulde DST-svar pga. midlertidig hentefejl.',
+          fallback.fallbackSource === 'snapshot'
+            ? `Viser senest deployede snapshot fra ${SNAPSHOTS.updatedAt} pga. DST-hentefejl i runtime.`
+            : 'Viser senest kendte succesfulde DST-svar pga. midlertidig hentefejl.',
           ...extraWarnings,
         ])),
       },
@@ -361,6 +389,7 @@ export async function GET(request: NextRequest) {
             fetchedAt,
             totalConstituencies: storkredsUrls.length,
             hasPartialData: true,
+            fallbackSource: 'none',
             warnings,
           },
           { headers: { 'Cache-Control': 'no-store, max-age=0' } }
@@ -378,6 +407,7 @@ export async function GET(request: NextRequest) {
           ...EMPTY_RESULT,
           fetchedAt,
           usingCachedFallback: false,
+          fallbackSource: 'none',
           lastUpdated: national.lastUpdated,
           sourceStatusText: national.statusText,
           totalConstituencies: storkredsUrls.length,
@@ -438,6 +468,7 @@ export async function GET(request: NextRequest) {
       lastUpdated: national.lastUpdated,
       fetchedAt,
       usingCachedFallback: false,
+      fallbackSource: 'none',
       totalCounted,
       totalVotes: national.totalValid || national.totalCast,
       sourceStatusText: national.statusText,

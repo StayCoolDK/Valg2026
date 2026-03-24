@@ -22,7 +22,7 @@ export default function ValgaftenHealthPage() {
             Valgaften driftsstatus
           </h1>
           <p className="text-muted-foreground">
-            Brug denne side til hurtigt at kontrollere live-feed, demo-feed og advarsler før og under valgaftenen.
+            Brug denne side til hurtigt at kontrollere live-feed, demo-feed, snapshot-fallback og advarsler før og under valgaftenen.
           </p>
         </div>
       </div>

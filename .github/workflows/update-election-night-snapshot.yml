@@ -1,0 +1,38 @@
+name: Update election-night snapshots
+
+on:
+  schedule:
+    # Every 5 minutes for a resilient Vercel fallback during election night
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Refresh election-night snapshots
+        id: snapshot
+        run: node scripts/update-election-night-snapshot.mjs
+        continue-on-error: true
+
+      - name: Commit and push updated snapshot
+        if: steps.snapshot.outcome == 'failure'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/election-night-snapshots.json
+          git diff --cached --quiet || git commit -m "chore: update election-night snapshot [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
