@@ -1,25 +1,781 @@
 {
-  "updatedAt": "2026-03-24T18:12:35.083Z",
+  "updatedAt": "2026-03-25T07:31:57.582Z",
   "live": {
-    "lastUpdated": "2026-03-24T14:06:47",
-    "fetchedAt": "2026-03-24T18:12:34.799Z",
+    "lastUpdated": "2026-03-25T00:20:46",
+    "fetchedAt": "2026-03-25T07:31:55.286Z",
     "usingCachedFallback": false,
     "fallbackSource": "none",
-    "totalCounted": 0,
-    "totalVotes": 0,
-    "sourceStatusText": "Resultatet foreligger endnu ikke.",
-    "reportedConstituencies": 0,
+    "totalCounted": 100,
+    "totalVotes": 3567456,
+    "sourceStatusText": "Foreløbigt resultat",
+    "reportedConstituencies": 10,
     "totalConstituencies": 10,
     "hasPartialData": false,
     "warnings": [],
-    "partyResults": [],
-    "constituencies": [],
-    "isLive": false,
-    "status": "waiting"
+    "partyResults": [
+      {
+        "partyLetter": "A",
+        "votes": 779524,
+        "pct": 21.9,
+        "seats": 38,
+        "change": -5.600000000000001
+      },
+      {
+        "partyLetter": "F",
+        "votes": 413465,
+        "pct": 11.6,
+        "seats": 20,
+        "change": 3.299999999999999
+      },
+      {
+        "partyLetter": "V",
+        "votes": 361578,
+        "pct": 10.1,
+        "seats": 18,
+        "change": -3.200000000000001
+      },
+      {
+        "partyLetter": "I",
+        "votes": 334435,
+        "pct": 9.4,
+        "seats": 16,
+        "change": 1.5
+      },
+      {
+        "partyLetter": "O",
+        "votes": 324702,
+        "pct": 9.1,
+        "seats": 16,
+        "change": 6.5
+      },
+      {
+        "partyLetter": "M",
+        "votes": 274066,
+        "pct": 7.7,
+        "seats": 14,
+        "change": -1.6000000000000005
+      },
+      {
+        "partyLetter": "C",
+        "votes": 270751,
+        "pct": 7.6,
+        "seats": 13,
+        "change": 2.0999999999999996
+      },
+      {
+        "partyLetter": "Ø",
+        "votes": 226113,
+        "pct": 6.3,
+        "seats": 11,
+        "change": 1.0999999999999996
+      },
+      {
+        "partyLetter": "B",
+        "votes": 207459,
+        "pct": 5.8,
+        "seats": 10,
+        "change": 2
+      },
+      {
+        "partyLetter": "Æ",
+        "votes": 205216,
+        "pct": 5.8,
+        "seats": 10,
+        "change": -2.3
+      },
+      {
+        "partyLetter": "Å",
+        "votes": 91879,
+        "pct": 2.6,
+        "seats": 5,
+        "change": -0.6999999999999997
+      },
+      {
+        "partyLetter": "H",
+        "votes": 75848,
+        "pct": 2.1,
+        "seats": 4,
+        "change": 2.1
+      }
+    ],
+    "constituencies": [
+      {
+        "id": "13",
+        "name": "Bornholms Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 7258,
+            "pct": 30.6
+          },
+          {
+            "partyLetter": "V",
+            "votes": 4168,
+            "pct": 17.6
+          },
+          {
+            "partyLetter": "F",
+            "votes": 2767,
+            "pct": 11.7
+          },
+          {
+            "partyLetter": "O",
+            "votes": 2500,
+            "pct": 10.5
+          },
+          {
+            "partyLetter": "M",
+            "votes": 1376,
+            "pct": 5.8
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 1322,
+            "pct": 5.6
+          },
+          {
+            "partyLetter": "I",
+            "votes": 1200,
+            "pct": 5.1
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 1000,
+            "pct": 4.2
+          },
+          {
+            "partyLetter": "C",
+            "votes": 874,
+            "pct": 3.7
+          },
+          {
+            "partyLetter": "H",
+            "votes": 420,
+            "pct": 1.8
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 438,
+            "pct": 1.8
+          },
+          {
+            "partyLetter": "B",
+            "votes": 411,
+            "pct": 1.7
+          }
+        ]
+      },
+      {
+        "id": "15",
+        "name": "Fyns Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 82241,
+            "pct": 26.2
+          },
+          {
+            "partyLetter": "F",
+            "votes": 38705,
+            "pct": 12.3
+          },
+          {
+            "partyLetter": "V",
+            "votes": 31746,
+            "pct": 10.1
+          },
+          {
+            "partyLetter": "O",
+            "votes": 27278,
+            "pct": 8.7
+          },
+          {
+            "partyLetter": "I",
+            "votes": 26399,
+            "pct": 8.4
+          },
+          {
+            "partyLetter": "M",
+            "votes": 23718,
+            "pct": 7.6
+          },
+          {
+            "partyLetter": "C",
+            "votes": 21836,
+            "pct": 7
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 19037,
+            "pct": 6.1
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 15206,
+            "pct": 4.8
+          },
+          {
+            "partyLetter": "B",
+            "votes": 13798,
+            "pct": 4.4
+          },
+          {
+            "partyLetter": "H",
+            "votes": 7065,
+            "pct": 2.2
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 6973,
+            "pct": 2.2
+          }
+        ]
+      },
+      {
+        "id": "11",
+        "name": "Københavns Omegns Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 66882,
+            "pct": 21.8
+          },
+          {
+            "partyLetter": "F",
+            "votes": 36902,
+            "pct": 12
+          },
+          {
+            "partyLetter": "O",
+            "votes": 33534,
+            "pct": 10.9
+          },
+          {
+            "partyLetter": "C",
+            "votes": 30870,
+            "pct": 10.1
+          },
+          {
+            "partyLetter": "M",
+            "votes": 27775,
+            "pct": 9.1
+          },
+          {
+            "partyLetter": "B",
+            "votes": 25750,
+            "pct": 8.4
+          },
+          {
+            "partyLetter": "I",
+            "votes": 25509,
+            "pct": 8.3
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 24342,
+            "pct": 7.9
+          },
+          {
+            "partyLetter": "V",
+            "votes": 17251,
+            "pct": 5.6
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 7797,
+            "pct": 2.5
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 5207,
+            "pct": 1.7
+          },
+          {
+            "partyLetter": "H",
+            "votes": 4561,
+            "pct": 1.5
+          }
+        ]
+      },
+      {
+        "id": "10",
+        "name": "Københavns Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "Ø",
+            "votes": 77334,
+            "pct": 16.6
+          },
+          {
+            "partyLetter": "A",
+            "votes": 71363,
+            "pct": 15.3
+          },
+          {
+            "partyLetter": "F",
+            "votes": 62121,
+            "pct": 13.3
+          },
+          {
+            "partyLetter": "B",
+            "votes": 55810,
+            "pct": 12
+          },
+          {
+            "partyLetter": "C",
+            "votes": 41776,
+            "pct": 9
+          },
+          {
+            "partyLetter": "M",
+            "votes": 38059,
+            "pct": 8.2
+          },
+          {
+            "partyLetter": "I",
+            "votes": 37446,
+            "pct": 8
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 30860,
+            "pct": 6.6
+          },
+          {
+            "partyLetter": "O",
+            "votes": 25334,
+            "pct": 5.4
+          },
+          {
+            "partyLetter": "V",
+            "votes": 16974,
+            "pct": 3.6
+          },
+          {
+            "partyLetter": "H",
+            "votes": 3498,
+            "pct": 0.8
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 3325,
+            "pct": 0.7
+          }
+        ]
+      },
+      {
+        "id": "19",
+        "name": "Nordjyllands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 102206,
+            "pct": 27.8
+          },
+          {
+            "partyLetter": "V",
+            "votes": 46356,
+            "pct": 12.6
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 45110,
+            "pct": 12.3
+          },
+          {
+            "partyLetter": "I",
+            "votes": 35495,
+            "pct": 9.7
+          },
+          {
+            "partyLetter": "F",
+            "votes": 33537,
+            "pct": 9.1
+          },
+          {
+            "partyLetter": "O",
+            "votes": 25180,
+            "pct": 6.9
+          },
+          {
+            "partyLetter": "C",
+            "votes": 19876,
+            "pct": 5.4
+          },
+          {
+            "partyLetter": "M",
+            "votes": 18743,
+            "pct": 5.1
+          },
+          {
+            "partyLetter": "B",
+            "votes": 13455,
+            "pct": 3.7
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 13303,
+            "pct": 3.6
+          },
+          {
+            "partyLetter": "H",
+            "votes": 8835,
+            "pct": 2.4
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 5086,
+            "pct": 1.4
+          }
+        ]
+      },
+      {
+        "id": "12",
+        "name": "Nordsjællands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 55990,
+            "pct": 19
+          },
+          {
+            "partyLetter": "C",
+            "votes": 35447,
+            "pct": 12
+          },
+          {
+            "partyLetter": "F",
+            "votes": 35227,
+            "pct": 11.9
+          },
+          {
+            "partyLetter": "I",
+            "votes": 30415,
+            "pct": 10.3
+          },
+          {
+            "partyLetter": "M",
+            "votes": 30378,
+            "pct": 10.3
+          },
+          {
+            "partyLetter": "O",
+            "votes": 28635,
+            "pct": 9.7
+          },
+          {
+            "partyLetter": "V",
+            "votes": 25445,
+            "pct": 8.6
+          },
+          {
+            "partyLetter": "B",
+            "votes": 21431,
+            "pct": 7.3
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 13583,
+            "pct": 4.6
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 6979,
+            "pct": 2.4
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 6973,
+            "pct": 2.4
+          },
+          {
+            "partyLetter": "H",
+            "votes": 4869,
+            "pct": 1.6
+          }
+        ]
+      },
+      {
+        "id": "14",
+        "name": "Sjællands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 119562,
+            "pct": 22.9
+          },
+          {
+            "partyLetter": "O",
+            "votes": 74779,
+            "pct": 14.3
+          },
+          {
+            "partyLetter": "F",
+            "votes": 65965,
+            "pct": 12.6
+          },
+          {
+            "partyLetter": "I",
+            "votes": 46539,
+            "pct": 8.9
+          },
+          {
+            "partyLetter": "M",
+            "votes": 46734,
+            "pct": 8.9
+          },
+          {
+            "partyLetter": "V",
+            "votes": 44986,
+            "pct": 8.6
+          },
+          {
+            "partyLetter": "C",
+            "votes": 31303,
+            "pct": 6
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 28179,
+            "pct": 5.4
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 22223,
+            "pct": 4.3
+          },
+          {
+            "partyLetter": "B",
+            "votes": 17523,
+            "pct": 3.4
+          },
+          {
+            "partyLetter": "H",
+            "votes": 14613,
+            "pct": 2.8
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 10078,
+            "pct": 1.9
+          }
+        ]
+      },
+      {
+        "id": "16",
+        "name": "Sydjyllands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 96710,
+            "pct": 22.7
+          },
+          {
+            "partyLetter": "V",
+            "votes": 72182,
+            "pct": 16.9
+          },
+          {
+            "partyLetter": "O",
+            "votes": 48421,
+            "pct": 11.4
+          },
+          {
+            "partyLetter": "I",
+            "votes": 43595,
+            "pct": 10.2
+          },
+          {
+            "partyLetter": "F",
+            "votes": 36220,
+            "pct": 8.5
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 33576,
+            "pct": 7.9
+          },
+          {
+            "partyLetter": "M",
+            "votes": 30061,
+            "pct": 7.1
+          },
+          {
+            "partyLetter": "C",
+            "votes": 22388,
+            "pct": 5.3
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 13611,
+            "pct": 3.2
+          },
+          {
+            "partyLetter": "B",
+            "votes": 12150,
+            "pct": 2.9
+          },
+          {
+            "partyLetter": "H",
+            "votes": 12531,
+            "pct": 2.9
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 4521,
+            "pct": 1.1
+          }
+        ]
+      },
+      {
+        "id": "18",
+        "name": "Vestjyllands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 66801,
+            "pct": 20.6
+          },
+          {
+            "partyLetter": "V",
+            "votes": 51847,
+            "pct": 16
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 41069,
+            "pct": 12.7
+          },
+          {
+            "partyLetter": "I",
+            "votes": 32789,
+            "pct": 10.1
+          },
+          {
+            "partyLetter": "F",
+            "votes": 32299,
+            "pct": 10
+          },
+          {
+            "partyLetter": "C",
+            "votes": 25887,
+            "pct": 8
+          },
+          {
+            "partyLetter": "O",
+            "votes": 24337,
+            "pct": 7.5
+          },
+          {
+            "partyLetter": "M",
+            "votes": 18390,
+            "pct": 5.7
+          },
+          {
+            "partyLetter": "B",
+            "votes": 9980,
+            "pct": 3.1
+          },
+          {
+            "partyLetter": "H",
+            "votes": 8529,
+            "pct": 2.6
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 8292,
+            "pct": 2.6
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 3584,
+            "pct": 1.1
+          }
+        ]
+      },
+      {
+        "id": "17",
+        "name": "Østjyllands Storkreds",
+        "counted": 100,
+        "results": [
+          {
+            "partyLetter": "A",
+            "votes": 110511,
+            "pct": 21.2
+          },
+          {
+            "partyLetter": "F",
+            "votes": 69722,
+            "pct": 13.3
+          },
+          {
+            "partyLetter": "I",
+            "votes": 55048,
+            "pct": 10.5
+          },
+          {
+            "partyLetter": "V",
+            "votes": 50623,
+            "pct": 9.7
+          },
+          {
+            "partyLetter": "C",
+            "votes": 40494,
+            "pct": 7.8
+          },
+          {
+            "partyLetter": "M",
+            "votes": 38832,
+            "pct": 7.4
+          },
+          {
+            "partyLetter": "B",
+            "votes": 37151,
+            "pct": 7.1
+          },
+          {
+            "partyLetter": "O",
+            "votes": 34704,
+            "pct": 6.6
+          },
+          {
+            "partyLetter": "Ø",
+            "votes": 33066,
+            "pct": 6.3
+          },
+          {
+            "partyLetter": "Æ",
+            "votes": 25565,
+            "pct": 4.9
+          },
+          {
+            "partyLetter": "Å",
+            "votes": 15569,
+            "pct": 3
+          },
+          {
+            "partyLetter": "H",
+            "votes": 10927,
+            "pct": 2.1
+          }
+        ]
+      }
+    ],
+    "isLive": true,
+    "status": "preliminary"
   },
   "demoDst": {
     "lastUpdated": "2022-11-02T10:05:31",
-    "fetchedAt": "2026-03-24T18:12:34.865Z",
+    "fetchedAt": "2026-03-25T07:31:55.354Z",
     "usingCachedFallback": false,
     "fallbackSource": "none",
     "totalCounted": 100,
